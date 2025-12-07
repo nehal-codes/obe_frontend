@@ -1,5 +1,5 @@
 // frontend/src/pages/CourseManagement.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -19,11 +19,11 @@ import {
   Grid,
   IconButton,
   Chip,
-  Box
-} from '@mui/material';
-import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
-import { courseAPI } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+  Box,
+} from "@mui/material";
+import { Add, Edit, Delete, Visibility } from "@mui/icons-material";
+import { hodAPI } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const CourseManagement = () => {
   const { user } = useAuth();
@@ -31,13 +31,13 @@ const CourseManagement = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({
-    code: '',
-    name: '',
-    description: '',
-    credits: '',
-    category: '',
-    version: '1.0',
-    threshold: 50.0
+    code: "",
+    name: "",
+    description: "",
+    credits: "",
+    category: "",
+    version: "1.0",
+    threshold: 50.0,
   });
 
   useEffect(() => {
@@ -46,10 +46,10 @@ const CourseManagement = () => {
 
   const loadCourses = async () => {
     try {
-      const response = await courseAPI.getCourses();
+      const response = await hodAPI.getAllCourses();
       setCourses(response.data);
     } catch (error) {
-      console.error('Error loading courses:', error);
+      console.error("Error loading courses:", error);
     }
   };
 
@@ -59,22 +59,22 @@ const CourseManagement = () => {
       setFormData({
         code: course.code,
         name: course.name,
-        description: course.description || '',
+        description: course.description || "",
         credits: course.credits.toString(),
         category: course.category,
         version: course.version,
-        threshold: course.threshold
+        threshold: course.threshold,
       });
     } else {
       setEditingCourse(null);
       setFormData({
-        code: '',
-        name: '',
-        description: '',
-        credits: '',
-        category: '',
-        version: '1.0',
-        threshold: 50.0
+        code: "",
+        name: "",
+        description: "",
+        credits: "",
+        category: "",
+        version: "1.0",
+        threshold: 50.0,
       });
     }
     setOpenDialog(true);
@@ -89,31 +89,36 @@ const CourseManagement = () => {
     e.preventDefault();
     try {
       if (editingCourse) {
-        await courseAPI.updateCourse(editingCourse.id, formData);
+        await hodAPI.updateCourse(editingCourse.id, formData);
       } else {
-        await courseAPI.createCourse(formData);
+        await hodAPI.createCourse(formData);
       }
       handleCloseDialog();
       loadCourses();
     } catch (error) {
-      console.error('Error saving course:', error);
+      console.error("Error saving course:", error);
     }
   };
 
   const handleDelete = async (courseId) => {
-    if (window.confirm('Are you sure you want to deactivate this course?')) {
+    if (window.confirm("Are you sure you want to deactivate this course?")) {
       try {
-        await courseAPI.deleteCourse(courseId);
+        await hodAPI.deleteCourse(courseId);
         loadCourses();
       } catch (error) {
-        console.error('Error deleting course:', error);
+        console.error("Error deleting course:", error);
       }
     }
   };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" component="h1">
           Course Management
         </Typography>
@@ -151,8 +156,8 @@ const CourseManagement = () => {
                 <TableCell>{course.threshold}%</TableCell>
                 <TableCell>
                   <Chip
-                    label={course.isActive ? 'Active' : 'Inactive'}
-                    color={course.isActive ? 'success' : 'default'}
+                    label={course.isActive ? "Active" : "Inactive"}
+                    color={course.isActive ? "success" : "default"}
                     size="small"
                   />
                 </TableCell>
@@ -176,9 +181,14 @@ const CourseManagement = () => {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>
-          {editingCourse ? 'Edit Course' : 'Add New Course'}
+          {editingCourse ? "Edit Course" : "Add New Course"}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
@@ -189,7 +199,9 @@ const CourseManagement = () => {
                   fullWidth
                   label="Course Code"
                   value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -198,7 +210,9 @@ const CourseManagement = () => {
                   fullWidth
                   label="Course Name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={12}>
@@ -208,7 +222,9 @@ const CourseManagement = () => {
                   rows={3}
                   label="Description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={4}>
@@ -218,7 +234,9 @@ const CourseManagement = () => {
                   type="number"
                   label="Credits"
                   value={formData.credits}
-                  onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, credits: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={4}>
@@ -227,7 +245,9 @@ const CourseManagement = () => {
                   fullWidth
                   label="Category"
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={4}>
@@ -236,7 +256,9 @@ const CourseManagement = () => {
                   fullWidth
                   label="Version"
                   value={formData.version}
-                  onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, version: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -246,7 +268,12 @@ const CourseManagement = () => {
                   type="number"
                   label="Attainment Threshold (%)"
                   value={formData.threshold}
-                  onChange={(e) => setFormData({ ...formData, threshold: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      threshold: parseFloat(e.target.value),
+                    })
+                  }
                   inputProps={{ min: 0, max: 100, step: 0.1 }}
                 />
               </Grid>
@@ -255,7 +282,7 @@ const CourseManagement = () => {
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
             <Button type="submit" variant="contained">
-              {editingCourse ? 'Update' : 'Create'}
+              {editingCourse ? "Update" : "Create"}
             </Button>
           </DialogActions>
         </form>

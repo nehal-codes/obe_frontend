@@ -1,5 +1,5 @@
 // frontend/src/pages/CLOManagement.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -23,32 +23,32 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
-} from '@mui/material';
-import { Add, Edit, Delete } from '@mui/icons-material';
-import { cloAPI, courseAPI } from '../services/api';
+  MenuItem,
+} from "@mui/material";
+import { Add, Edit, Delete } from "@mui/icons-material";
+import { hodAPI } from "../services/api";
 
 const CLOManagement = () => {
   const [clos, setClos] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [editingCLO, setEditingCLO] = useState(null);
   const [formData, setFormData] = useState({
-    cloCode: '',
-    description: '',
-    bloomLevel: '',
-    version: '1.0',
-    courseId: ''
+    cloCode: "",
+    description: "",
+    bloomLevel: "",
+    version: "1.0",
+    courseId: "",
   });
 
   const bloomLevels = [
-    'REMEMBER',
-    'UNDERSTAND',
-    'APPLY',
-    'ANALYZE',
-    'EVALUATE',
-    'CREATE'
+    "REMEMBER",
+    "UNDERSTAND",
+    "APPLY",
+    "ANALYZE",
+    "EVALUATE",
+    "CREATE",
   ];
 
   useEffect(() => {
@@ -63,22 +63,22 @@ const CLOManagement = () => {
 
   const loadCourses = async () => {
     try {
-      const response = await courseAPI.getCourses();
+      const response = await hodAPI.getCourses();
       setCourses(response.data);
       if (response.data.length > 0) {
         setSelectedCourse(response.data[0].id);
       }
     } catch (error) {
-      console.error('Error loading courses:', error);
+      console.error("Error loading courses:", error);
     }
   };
 
   const loadCLOs = async (courseId) => {
     try {
-      const response = await cloAPI.getCLOsByCourse(courseId);
+      const response = await hodAPI.getCLOsByCourse(courseId);
       setClos(response.data);
     } catch (error) {
-      console.error('Error loading CLOs:', error);
+      console.error("Error loading CLOs:", error);
     }
   };
 
@@ -90,16 +90,16 @@ const CLOManagement = () => {
         description: clo.description,
         bloomLevel: clo.bloomLevel,
         version: clo.version,
-        courseId: clo.courseId
+        courseId: clo.courseId,
       });
     } else {
       setEditingCLO(null);
       setFormData({
-        cloCode: '',
-        description: '',
-        bloomLevel: '',
-        version: '1.0',
-        courseId: selectedCourse
+        cloCode: "",
+        description: "",
+        bloomLevel: "",
+        version: "1.0",
+        courseId: selectedCourse,
       });
     }
     setOpenDialog(true);
@@ -114,20 +114,25 @@ const CLOManagement = () => {
     e.preventDefault();
     try {
       if (editingCLO) {
-        await cloAPI.updateCLO(editingCLO.id, formData);
+        await hodAPI.updateCLO(editingCLO.id, formData);
       } else {
-        await cloAPI.createCLO(formData);
+        await hodAPI.createCLO(formData);
       }
       handleCloseDialog();
       loadCLOs(selectedCourse);
     } catch (error) {
-      console.error('Error saving CLO:', error);
+      console.error("Error saving CLO:", error);
     }
   };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" component="h1">
           CLO Management
         </Typography>
@@ -186,8 +191,8 @@ const CLOManagement = () => {
                 <TableCell>{clo.version}</TableCell>
                 <TableCell>
                   <Chip
-                    label={clo.isActive ? 'Active' : 'Inactive'}
-                    color={clo.isActive ? 'success' : 'default'}
+                    label={clo.isActive ? "Active" : "Inactive"}
+                    color={clo.isActive ? "success" : "default"}
                     size="small"
                   />
                 </TableCell>
@@ -198,9 +203,6 @@ const CLOManagement = () => {
                   >
                     <Edit />
                   </IconButton>
-                  <IconButton color="error">
-                    <Delete />
-                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -208,10 +210,13 @@ const CLOManagement = () => {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {editingCLO ? 'Edit CLO' : 'Add New CLO'}
-        </DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>{editingCLO ? "Edit CLO" : "Add New CLO"}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -221,7 +226,9 @@ const CLOManagement = () => {
                   fullWidth
                   label="CLO Code"
                   value={formData.cloCode}
-                  onChange={(e) => setFormData({ ...formData, cloCode: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cloCode: e.target.value })
+                  }
                   placeholder="CLO1, CLO2, etc."
                 />
               </Grid>
@@ -231,7 +238,9 @@ const CLOManagement = () => {
                   <Select
                     value={formData.bloomLevel}
                     label="Bloom's Taxonomy Level"
-                    onChange={(e) => setFormData({ ...formData, bloomLevel: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bloomLevel: e.target.value })
+                    }
                   >
                     {bloomLevels.map((level) => (
                       <MenuItem key={level} value={level}>
@@ -249,7 +258,9 @@ const CLOManagement = () => {
                   rows={3}
                   label="Description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -258,7 +269,9 @@ const CLOManagement = () => {
                   fullWidth
                   label="Version"
                   value={formData.version}
-                  onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, version: e.target.value })
+                  }
                 />
               </Grid>
             </Grid>
@@ -266,7 +279,7 @@ const CLOManagement = () => {
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
             <Button type="submit" variant="contained">
-              {editingCLO ? 'Update' : 'Create'}
+              {editingCLO ? "Update" : "Create"}
             </Button>
           </DialogActions>
         </form>
