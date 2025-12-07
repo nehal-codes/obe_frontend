@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -6,24 +7,60 @@ import {
   Typography,
   Box,
   Card,
-  CardContent
-} from '@mui/material';
-import {
-  School,
-  ListAlt,
-  Assignment,
-  Assessment
-} from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+  CardContent,
+} from "@mui/material";
+import { School, ListAlt, Assignment, Assessment } from "@mui/icons-material";
+import { useAuth } from "../contexts/AuthContext";
+import { hodAPI } from "../services/api";
 
 const Dashboard = () => {
   const { user } = useAuth();
 
+  const [statsData, setStatsData] = useState({
+    totalCourses: 0,
+    activeCLOs: 0,
+    programOutcomes: 0,
+    pendingReviews: 0,
+  });
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const response = await hodAPI.getDashboardStats();
+      setStatsData(response.data);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  };
+
   const stats = [
-    { title: 'Total Courses', value: '12', icon: <School />, color: '#1976d2' },
-    { title: 'Active CLOs', value: '45', icon: <ListAlt />, color: '#2e7d32' },
-    { title: 'Program Outcomes', value: '12', icon: <Assignment />, color: '#ed6c02' },
-    { title: 'Pending Reviews', value: '8', icon: <Assessment />, color: '#d32f2f' },
+    {
+      title: "Total Courses",
+      value: statsData.totalCourses,
+      icon: <School />,
+      color: "#1976d2",
+    },
+    {
+      title: "Active CLOs",
+      value: statsData.activeCLOs,
+      icon: <ListAlt />,
+      color: "#2e7d32",
+    },
+    {
+      title: "Program Outcomes",
+      value: statsData.programOutcomes,
+      icon: <Assignment />,
+      color: "#ed6c02",
+    },
+    {
+      title: "Pending Reviews",
+      value: statsData.pendingReviews,
+      icon: <Assessment />,
+      color: "#d32f2f",
+    },
   ];
 
   return (
@@ -40,7 +77,11 @@ const Dashboard = () => {
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card>
               <CardContent>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Box>
                     <Typography color="textSecondary" gutterBottom>
                       {stat.title}
@@ -49,9 +90,7 @@ const Dashboard = () => {
                       {stat.value}
                     </Typography>
                   </Box>
-                  <Box sx={{ color: stat.color }}>
-                    {stat.icon}
-                  </Box>
+                  <Box sx={{ color: stat.color }}>{stat.icon}</Box>
                 </Box>
               </CardContent>
             </Card>
